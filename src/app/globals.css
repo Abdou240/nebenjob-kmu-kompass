@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-sand text-ink font-sans;
+}
+
+h1, h2, h3, h4 {
+  @apply font-serif text-ink;
+}
+
+a {
+  @apply text-moss hover:text-ember transition-colors;
+}
+
+::selection {
+  background: #c7b39a;
+  color: #1f2a24;
+}
+
+.gradient-bg {
+  background: radial-gradient(circle at top left, #eef2ed 0%, #f4f1ea 55%, #ffffff 100%);
+}
+
+.card-surface {
+  @apply bg-white/90 backdrop-blur border border-mist shadow-soft;
+}

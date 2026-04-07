@@ -292,3 +292,17 @@ When working on this project:
 If there are multiple good options, choose the simpler and cheaper one unless there is a strong reason not to.
 
 If uncertain on legal/tax semantics, prefer neutral wording and isolate assumptions in config.
+
+---
+
+## Changelog
+
+2026-04-07
+- Scaffolded Next.js App Router project with TypeScript, Tailwind, ESLint, Zod, Vitest.
+- Implemented landing page, shared layout, SEO metadata, sitemap, and robots.
+- Built 3 calculators (Stundenlohn, Nebenverdienst, Kleinunternehmer) with reusable UI layout.
+- Added pure calculator logic modules and Zod validation schemas.
+- Centralized disclaimers, FAQs, assumptions, and threshold config.
+- Added AdSlot placeholder component with config toggle.
+- Added unit tests for calculator logic and fixed rounding consistency.
+- Updated dependencies to patched Next.js and Vitest versions.
