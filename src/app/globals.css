@@ -2,31 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-white text-text font-sans text-body antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif text-text;
+  }
+
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
+  }
 }
 
-body {
-  @apply bg-sand text-ink font-sans;
-}
+@layer components {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:ring-offset-2;
+  }
 
-h1, h2, h3, h4 {
-  @apply font-serif text-ink;
-}
+  .card {
+    @apply bg-surface rounded-xl border border-surface-border shadow-card;
+  }
 
-a {
-  @apply text-moss hover:text-ember transition-colors;
-}
+  .card-hover {
+    @apply card transition-shadow duration-200 hover:shadow-card-hover;
+  }
 
-::selection {
-  background: #c7b39a;
-  color: #1f2a24;
-}
+  .section-padding {
+    @apply py-16 sm:py-20;
+  }
 
-.gradient-bg {
-  background: radial-gradient(circle at top left, #eef2ed 0%, #f4f1ea 55%, #ffffff 100%);
-}
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-150 hover:bg-brand-600 focus-ring;
+  }
 
-.card-surface {
-  @apply bg-white/90 backdrop-blur border border-mist shadow-soft;
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-surface-border bg-surface px-5 py-2.5 text-sm font-semibold text-text shadow-xs transition-colors duration-150 hover:bg-surface-muted hover:border-surface-border-hover focus-ring;
+  }
 }

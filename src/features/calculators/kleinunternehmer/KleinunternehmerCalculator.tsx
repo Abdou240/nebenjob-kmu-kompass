@@ -5,26 +5,30 @@ import { FormField } from "@/components/FormField";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import { ResultCard } from "@/components/ResultCard";
+import { SectionCard } from "@/components/SectionCard";
 import { calculateKleinunternehmer } from "@/lib/calculators/kleinunternehmer";
 import { kleinunternehmerSchema } from "@/lib/validation/kleinunternehmer";
 import { formatCurrency, parseGermanNumber } from "@/lib/format";
 import { DEFAULT_REGIME_KEY, KLEINUNTERNEHMER_REGIMES } from "@/config/thresholds";
 
-const statusStyles: Record<string, string> = {
-  within: "bg-mist/80 text-ink",
-  near: "bg-clay/60 text-ink",
-  exceeded: "bg-ember/10 text-ember"
-};
-
-const statusLabels: Record<string, string> = {
-  within: "Innerhalb der Grenze (Orientierung)",
-  near: "Nahe an der Grenze",
-  exceeded: "Grenze überschritten"
+const statusConfig: Record<string, { style: string; label: string }> = {
+  within: {
+    style: "bg-success-50 text-success-700 border-success-500/20",
+    label: "Innerhalb der Grenze (Orientierung)"
+  },
+  near: {
+    style: "bg-warning-50 text-warning-700 border-warning-500/20",
+    label: "Nahe an der Grenze"
+  },
+  exceeded: {
+    style: "bg-danger-50 text-danger-700 border-danger-500/20",
+    label: "Grenze überschritten"
+  }
 };
 
 export function KleinunternehmerCalculator() {
   const [period, setPeriod] = useState("monthly");
-  const [regimeKey, setRegimeKey] = useState(DEFAULT_REGIME_KEY);
+  const [regimeKey, setRegimeKey] = useState<"bis_2024" | "ab_2025">(DEFAULT_REGIME_KEY);
   const [revenuePrev, setRevenuePrev] = useState("1500");
   const [revenueCurrent, setRevenueCurrent] = useState("2200");
 
@@ -55,11 +59,13 @@ export function KleinunternehmerCalculator() {
 
   return (
     <div className="space-y-6">
-      <div className="card-surface rounded-3xl p-6">
-        <h2 className="text-lg font-semibold">Eingaben</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <SectionCard
+        title="Eingaben"
+        footer={<p className="text-xs text-text-tertiary">{regime.notes}</p>}
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
           <FormField label="Regelung" hint="Wähle die passende Umsatzgrenze">
-            <Select value={regimeKey} onChange={(event) => setRegimeKey(event.target.value)}>
+            <Select value={regimeKey} onChange={(event) => setRegimeKey(event.target.value as "bis_2024" | "ab_2025")}>
               {KLEINUNTERNEHMER_REGIMES.map((item) => (
                 <option key={item.key} value={item.key}>
                   {item.label} ({formatCurrency(item.prevYearLimit)} / {formatCurrency(item.currentYearLimit)})
@@ -81,6 +87,7 @@ export function KleinunternehmerCalculator() {
           >
             <Input
               inputMode="decimal"
+              placeholder="1.500"
               value={revenuePrev}
               onChange={(event) => setRevenuePrev(event.target.value)}
             />
@@ -92,32 +99,27 @@ export function KleinunternehmerCalculator() {
           >
             <Input
               inputMode="decimal"
+              placeholder="2.200"
               value={revenueCurrent}
               onChange={(event) => setRevenueCurrent(event.target.value)}
             />
           </FormField>
         </div>
-        <p className="mt-4 text-xs text-ink/60">{regime.notes}</p>
-      </div>
+      </SectionCard>
 
-      <div className="card-surface rounded-3xl p-6">
-        <h2 className="text-lg font-semibold">Ergebnisse (Orientierung)</h2>
+      <SectionCard title="Ergebnisse (Orientierung)">
         {!result ? (
-          <p className="mt-3 text-sm text-ink/60">Bitte ergänze gültige Werte, um Ergebnisse zu sehen.</p>
+          <p className="text-sm text-text-tertiary">Bitte ergänze gültige Werte, um Ergebnisse zu sehen.</p>
         ) : (
           <div className="space-y-4">
-            <div className="rounded-2xl border border-mist bg-white/90 p-4">
-              <div className="text-sm text-ink/60">Gesamtstatus</div>
-              <div
-                className={`mt-2 inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${
-                  statusStyles[result.overallStatus]
-                }`}
-              >
-                {statusLabels[result.overallStatus]}
+            <div className={`rounded-xl border p-4 ${statusConfig[result.overallStatus].style}`}>
+              <div className="text-xs font-medium uppercase tracking-wider opacity-70">Gesamtstatus</div>
+              <div className="mt-1 text-sm font-semibold">
+                {statusConfig[result.overallStatus].label}
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <ResultCard
                 label="Umsatz Vorjahr (hochgerechnet)"
                 value={formatCurrency(result.annualPrevRevenue)}
@@ -130,15 +132,13 @@ export function KleinunternehmerCalculator() {
               />
             </div>
 
-            <div className="rounded-2xl border border-mist bg-mist/60 p-4 text-sm text-ink/70">
-              <p>
-                Quelle: {regime.sourceLabel}. Bitte prüfe bei Bedarf die aktuellen Werte. Diese Auswertung ist nur
-                unverbindliche Orientierung.
-              </p>
+            <div className="rounded-lg bg-surface-muted p-4 text-xs text-text-tertiary">
+              Quelle: {regime.sourceLabel}. Bitte prüfe bei Bedarf die aktuellen Werte. Diese Auswertung ist nur
+              unverbindliche Orientierung.
             </div>
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   );
 }

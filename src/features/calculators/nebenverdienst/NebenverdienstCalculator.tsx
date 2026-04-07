@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { FormField } from "@/components/FormField";
 import { Input } from "@/components/Input";
 import { ResultCard } from "@/components/ResultCard";
+import { SectionCard } from "@/components/SectionCard";
 import { calculateNebenverdienst } from "@/lib/calculators/nebenverdienst";
 import { nebenverdienstSchema } from "@/lib/validation/nebenverdienst";
 import { formatCurrency, parseGermanNumber } from "@/lib/format";
@@ -32,16 +33,16 @@ export function NebenverdienstCalculator() {
 
   return (
     <div className="space-y-6">
-      <div className="card-surface rounded-3xl p-6">
-        <h2 className="text-lg font-semibold">Eingaben</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <SectionCard title="Eingaben">
+        <div className="grid gap-5 sm:grid-cols-2">
           <FormField
             label="Monatliche Einnahmen"
-            hint="Beispiel: 800"
+            hint="z.B. 800"
             error={errors.monthlyIncome ? "Bitte gültige Einnahmen eingeben." : undefined}
           >
             <Input
               inputMode="decimal"
+              placeholder="800"
               value={monthlyIncome}
               onChange={(event) => setMonthlyIncome(event.target.value)}
             />
@@ -53,32 +54,33 @@ export function NebenverdienstCalculator() {
           >
             <Input
               inputMode="decimal"
+              placeholder="150"
               value={monthlyExpenses}
               onChange={(event) => setMonthlyExpenses(event.target.value)}
             />
           </FormField>
           <FormField
             label="Schwankung in %"
-            hint="Standard: 10%"
-            error={errors.variancePercent ? "Bitte gültige Prozentzahl (0-50) eingeben." : undefined}
+            hint="Standard: 10 %"
+            error={errors.variancePercent ? "Bitte gültige Prozentzahl (0–50) eingeben." : undefined}
           >
             <Input
               inputMode="decimal"
+              placeholder="10"
               value={variancePercent}
               onChange={(event) => setVariancePercent(event.target.value)}
             />
           </FormField>
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="card-surface rounded-3xl p-6">
-        <h2 className="text-lg font-semibold">Ergebnisse (Schätzung)</h2>
+      <SectionCard title="Ergebnisse (Schätzung)">
         {!result ? (
-          <p className="mt-3 text-sm text-ink/60">Bitte ergänze gültige Werte, um Ergebnisse zu sehen.</p>
+          <p className="text-sm text-text-tertiary">Bitte ergänze gültige Werte, um Ergebnisse zu sehen.</p>
         ) : (
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <ResultCard label="Monatlicher Überschuss" value={formatCurrency(result.monthlyNet)} />
-            <ResultCard label="Jährlicher Überschuss" value={formatCurrency(result.yearlyNet)} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ResultCard label="Monatlicher Überschuss" value={formatCurrency(result.monthlyNet)} variant="highlight" />
+            <ResultCard label="Jährlicher Überschuss" value={formatCurrency(result.yearlyNet)} variant="highlight" />
             <ResultCard
               label="Konservativ (Monat)"
               value={formatCurrency(result.scenario.lowMonthlyNet)}
@@ -99,7 +101,7 @@ export function NebenverdienstCalculator() {
             />
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   );
 }

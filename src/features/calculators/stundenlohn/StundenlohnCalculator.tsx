@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { FormField } from "@/components/FormField";
 import { Input } from "@/components/Input";
 import { ResultCard } from "@/components/ResultCard";
+import { SectionCard } from "@/components/SectionCard";
 import { calculateStundenlohn } from "@/lib/calculators/stundenlohn";
 import { stundenlohnSchema } from "@/lib/validation/stundenlohn";
 import { formatCurrency, formatNumber, parseGermanNumber } from "@/lib/format";
@@ -43,27 +44,35 @@ export function StundenlohnCalculator() {
 
   return (
     <div className="space-y-6">
-      <div className="card-surface rounded-3xl p-6">
-        <h2 className="text-lg font-semibold">Eingaben</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <SectionCard
+        title="Eingaben"
+        footer={
+          <p className="text-xs text-text-tertiary">
+            Annahme: {DEFAULT_WEEKS_PER_MONTH} Wochen pro Monat (Durchschnitt). Ergebnisse sind Schätzungen.
+          </p>
+        }
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
           <FormField
             label="Monatsgehalt (brutto)"
-            hint="Beispiel: 3.000"
+            hint="z.B. 3.000"
             error={errors.monthlySalary ? "Bitte ein gültiges Monatsgehalt eingeben." : undefined}
           >
             <Input
               inputMode="decimal"
+              placeholder="3.000"
               value={monthlySalary}
               onChange={(event) => setMonthlySalary(event.target.value)}
             />
           </FormField>
           <FormField
             label="Wochenarbeitszeit (Stunden)"
-            hint="Beispiel: 40"
+            hint="z.B. 40"
             error={errors.weeklyHours ? "Bitte eine gültige Wochenarbeitszeit eingeben." : undefined}
           >
             <Input
               inputMode="decimal"
+              placeholder="40"
               value={weeklyHours}
               onChange={(event) => setWeeklyHours(event.target.value)}
             />
@@ -75,34 +84,32 @@ export function StundenlohnCalculator() {
           >
             <Input
               inputMode="decimal"
+              placeholder="5"
               value={overtimeHours}
               onChange={(event) => setOvertimeHours(event.target.value)}
             />
           </FormField>
           <FormField
             label="Überstundenzuschlag (%)"
-            hint="Optional, Standard: 25%"
+            hint="Standard: 25 %"
             error={errors.overtimePremiumPercent ? "Bitte eine gültige Prozentzahl eingeben." : undefined}
           >
             <Input
               inputMode="decimal"
+              placeholder="25"
               value={overtimePremium}
               onChange={(event) => setOvertimePremium(event.target.value)}
             />
           </FormField>
         </div>
-        <p className="mt-4 text-xs text-ink/60">
-          Annahme: {DEFAULT_WEEKS_PER_MONTH} Wochen pro Monat (Durchschnitt). Ergebnisse sind Schätzungen.
-        </p>
-      </div>
+      </SectionCard>
 
-      <div className="card-surface rounded-3xl p-6">
-        <h2 className="text-lg font-semibold">Ergebnisse (Schätzung)</h2>
+      <SectionCard title="Ergebnisse (Schätzung)">
         {!result ? (
-          <p className="mt-3 text-sm text-ink/60">Bitte ergänze gültige Werte, um Ergebnisse zu sehen.</p>
+          <p className="text-sm text-text-tertiary">Bitte ergänze gültige Werte, um Ergebnisse zu sehen.</p>
         ) : (
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <ResultCard label="Stundenlohn" value={formatCurrency(result.hourlyWage)} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ResultCard label="Stundenlohn" value={formatCurrency(result.hourlyWage)} variant="highlight" />
             <ResultCard label="Monatsarbeitszeit" value={`${formatNumber(result.monthlyHours)} Std.`} />
             <ResultCard label="Überstundenvergütung" value={formatCurrency(result.overtimePay)} />
             <ResultCard label="Monat inkl. Überstunden" value={formatCurrency(result.totalMonthlyPay)} />
@@ -110,6 +117,7 @@ export function StundenlohnCalculator() {
               label="Effektiver Stundenlohn"
               value={formatCurrency(result.effectiveHourlyWage)}
               helper="inkl. Überstunden"
+              variant="highlight"
             />
             <ResultCard
               label="Jahresgehalt (Schätzung)"
@@ -117,7 +125,7 @@ export function StundenlohnCalculator() {
             />
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   );
 }

@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Saved calculation results for future "history" feature
+model Calculation {
+  id        String   @id @default(cuid())
+  type      String   // "stundenlohn" | "nebenverdienst" | "kleinunternehmer"
+  input     Json
+  result    Json
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([type])
+  @@index([createdAt])
+  @@map("calculations")
+}
+
+// Lightweight event tracking for product analytics
+model Event {
+  id        String   @id @default(cuid())
+  name      String   // e.g. "calculator.used", "page.viewed"
+  payload   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([name])
+  @@index([createdAt])
+  @@map("events")
+}

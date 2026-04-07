@@ -2,12 +2,26 @@ import { FAQItem } from "@/content/faqs";
 
 export function FAQ({ items }: { items: FAQItem[] }) {
   return (
-    <div className="space-y-4">
-      {items.map((item) => (
-        <div key={item.question} className="rounded-2xl border border-mist bg-white/90 p-5">
-          <h3 className="text-base font-semibold text-ink">{item.question}</h3>
-          <p className="mt-2 text-sm text-ink/70">{item.answer}</p>
-        </div>
+    <div className="divide-y divide-surface-border rounded-xl border border-surface-border bg-white overflow-hidden">
+      {items.map((item, index) => (
+        <details key={item.question} className="group" open={index === 0}>
+          <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-sm font-semibold text-text transition-colors hover:bg-surface-muted select-none">
+            {item.question}
+            <svg
+              className="h-4 w-4 shrink-0 text-text-tertiary transition-transform duration-200 group-open:rotate-180"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M4 6l4 4 4-4" />
+            </svg>
+          </summary>
+          <div className="px-5 pb-4 text-sm text-text-secondary leading-relaxed">
+            {item.answer}
+          </div>
+        </details>
       ))}
     </div>
   );

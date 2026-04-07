@@ -2,7 +2,7 @@
 
 ## Project mission
 
-Build a lean German utility web app called **Nebenjob & Kleinunternehmer Helfer**.
+Build a lean German utility web app called **Nebenjob & Kleinunternehmer Helfer** (KMU Kompass).
 
 The product helps users in Germany with simple, trustworthy calculators and helper tools around:
 - side income
@@ -104,34 +104,62 @@ All thresholds, constants, disclaimers, and assumption texts must live in struct
 
 ---
 
-## Technical preferences
+## Technical stack
 
-Preferred stack:
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Zod
-- minimal dependencies
-- local-first where possible
+Current stack:
+- **Next.js 15** (App Router, standalone output)
+- **TypeScript** (strict mode)
+- **Tailwind CSS 3** with custom design system tokens
+- **Zod** for input validation
+- **Prisma 7** + PostgreSQL (database foundation with driver adapter)
+- **Vitest** for unit tests
+- **Docker** / Docker Compose for local development
+- **GitHub Actions** for CI (lint, test, build)
 
-Only add:
-- Prisma
-- PostgreSQL
-- Supabase
-- auth
-when the chosen implementation truly requires persistence.
-
-Keep the MVP deployable on a very low-cost setup.
+Fonts:
+- **Inter** (sans-serif, body text)
+- **Source Serif 4** (serif, headings)
 
 ---
 
-## Architecture rules
+## Architecture
+
+```
+src/
+├── app/                        # Next.js App Router pages & API routes
+│   ├── api/
+│   │   ├── health/             # GET /api/health
+│   │   └── calculators/        # POST endpoints per calculator
+│   ├── calculators/            # Calculator pages (SSG)
+│   ├── layout.tsx              # Root layout (fonts, Header, Footer)
+│   ├── page.tsx                # Homepage
+│   └── globals.css             # Design system (component classes)
+├── components/                 # Shared UI components
+├── config/                     # App config, thresholds, ads, calculator defaults
+├── content/                    # German copy (disclaimers, FAQs)
+├── features/calculators/       # Calculator-specific client components
+├── generated/                  # Prisma generated client (gitignored)
+├── lib/                        # Domain logic, validation, formatters, API helpers
+│   ├── api/response.ts         # Typed API response utilities
+│   ├── calculators/            # Pure calculator functions
+│   ├── db/client.ts            # Prisma client singleton
+│   ├── format.ts               # Number/currency formatting
+│   ├── seo/metadata.ts         # SEO metadata builder
+│   └── validation/             # Zod schemas
+├── services/                   # Service layer (validation + calculation)
+tests/                          # Unit tests
+prisma/schema.prisma            # Database schema
+```
+
+### Architecture rules
 
 Use clear separation between:
 - UI
 - domain calculation logic
 - validation
 - config/content
+- API layer
+- services
 - infrastructure
 
 Calculator logic must be:
@@ -140,17 +168,28 @@ Calculator logic must be:
 - testable independently from UI
 - easy to port later to mobile
 
-Create a repeatable calculator pattern so future tools can be added with minimal duplication.
+---
 
-Suggested high-level structure:
-- `app/` for routes/pages
-- `components/` for UI
-- `features/calculators/` for calculator-specific flows
-- `lib/calculators/` for domain logic
-- `lib/validation/` for schemas
-- `content/` or `config/` for assumptions/disclaimers/text
-- `lib/seo/` for metadata helpers
-- `tests/` for logic tests
+## Design system
+
+The app uses a clean, professional fintech-inspired design:
+
+**Color palette:**
+- `brand-*` (blue scale) — primary actions, highlights, active states
+- `surface-*` — backgrounds, borders, cards
+- `text-*` — primary, secondary, tertiary text
+- `success-*` / `warning-*` / `danger-*` — semantic status colors
+
+**Typography:**
+- Inter for body, labels, navigation
+- Source Serif 4 for headings
+- Scale: display, display-sm, h1, h2, h3, body-lg, body, sm, xs, label
+
+**Component patterns:**
+- `.card` / `.card-hover` — bordered cards with subtle shadows
+- `.btn-primary` / `.btn-secondary` — consistent button styles
+- `.focus-ring` — accessible focus indicators
+- `.section-padding` — consistent vertical rhythm
 
 ---
 
@@ -187,17 +226,12 @@ The product relies heavily on organic traffic.
 Requirements:
 - one landing page
 - one page per calculator
-- strong metadata
-- internal linking
-- FAQ-friendly structure
+- strong metadata (OpenGraph, Twitter cards, canonical URLs)
+- internal linking between calculators
+- FAQ-friendly structure with collapsible accordions
 - clear H1/H2 hierarchy
 - clean German copy matching user search intent
-
-Likely intents:
-- Nebenverdienst Rechner
-- Kleinunternehmer Grenze Rechner
-- Stundenlohn Rechner
-- Überstunden Rechner
+- sitemap.xml and robots.txt
 
 ---
 
@@ -205,37 +239,13 @@ Likely intents:
 
 Ads are secondary to UX.
 
-Implement monetization architecture so ad components are:
+The `AdSlot` component is:
 - optional
 - isolated
 - easily removable
-- not mixed into calculation logic
+- configuration-based enable/disable via `src/config/ads.ts`
 
 Do not hardwire ad logic into business logic.
-
-Create:
-- `AdSlot` component
-- optional placement areas
-- configuration-based enable/disable path
-
----
-
-## Coding rules
-
-- write production-quality code
-- avoid pseudo-code
-- avoid giant files
-- prefer readable code over clever abstractions
-- keep functions small
-- comment only where helpful
-- use TypeScript properly
-- validate all user input
-- handle edge cases gracefully
-
-Before adding a new dependency, ask:
-1. Is this necessary?
-2. Is there a lighter built-in option?
-3. Does this increase long-term maintenance cost?
 
 ---
 
@@ -247,20 +257,51 @@ At minimum, test:
 - invalid inputs
 - rounding/formatting assumptions
 
-Do not ship calculator logic without tests.
+Current test coverage: 10 tests across 4 test files.
 
 ---
 
-## Deployment rules
+## Deployment
 
-Favor the cheapest practical hosting setup.
+**Vercel:**
+- Build Command: `npm run build`
+- Framework: Next.js (standalone output)
+- Set `NEXT_PUBLIC_BASE_URL` and `DATABASE_URL`
 
-Default preference:
-- frontend on Vercel
-- serverless only where needed
-- add database only when needed
+**Docker:**
+- `docker compose up --build` for app + PostgreSQL
+- Multi-stage Dockerfile with standalone output
+- Healthcheck on PostgreSQL
 
-The first shipped version should be easy for a solo founder to deploy and maintain.
+---
+
+## CI/CD
+
+GitHub Actions workflow runs on every push and pull request:
+- Install dependencies
+- Generate Prisma client
+- Lint
+- Type check
+- Unit tests
+- Production build
+
+---
+
+## Database
+
+**Prisma 7** with PostgreSQL via `@prisma/adapter-pg`.
+
+Schema includes:
+- `Calculation` — saved inputs/results for future history feature
+- `Event` — lightweight analytics events
+
+Both tables are scaffolded for future features, not actively written to yet.
+
+Commands:
+- `npm run db:generate` — generate Prisma client
+- `npm run db:migrate` — run migrations
+- `npm run db:push` — push schema to DB
+- `npm run db:studio` — open Prisma Studio
 
 ---
 
@@ -305,4 +346,22 @@ If uncertain on legal/tax semantics, prefer neutral wording and isolate assumpti
 - Centralized disclaimers, FAQs, assumptions, and threshold config.
 - Added AdSlot placeholder component with config toggle.
 - Added unit tests for calculator logic and fixed rounding consistency.
-- Updated dependencies to patched Next.js and Vitest versions.
+
+2026-04-07 (Phase 2 — Professionalization)
+- Fixed hydration error (suppressHydrationWarning on html tag).
+- Complete frontend redesign: new color palette (brand blue + slate), new fonts (Inter + Source Serif 4).
+- Added design system with semantic colors (brand, surface, text, success, warning, danger).
+- Redesigned all components: Header (sticky, active states, mobile nav), Footer, FAQ (collapsible accordion), ResultCard (highlight variant), DisclaimerBox (warning styling), SectionCard, FormField, Input, Select.
+- Calculator pages: breadcrumb navigation, better section structure, colored status badges.
+- Homepage: centered hero, feature badges, icon-decorated calculator cards.
+- Added API foundation: health endpoint, 3 calculator POST endpoints with Zod validation.
+- Added service layer for calculator domain logic.
+- Added shared API response utilities (success/error/validation responses).
+- Added Prisma 7 + PostgreSQL with driver adapter, initial schema (Calculation, Event).
+- Added Prisma client singleton with dev-mode caching.
+- Added Docker setup: multi-stage Dockerfile, docker-compose.yml (app + PostgreSQL), .dockerignore.
+- Next.js standalone output for production Docker builds.
+- Added format utility tests (parseGermanNumber, roundCurrency, clamp).
+- Added GitHub Actions CI workflow (lint, typecheck, test, build).
+- Updated README with full architecture docs, setup instructions, Docker guide.
+- Updated AGENTS.md with current stack, architecture, and design system documentation.
