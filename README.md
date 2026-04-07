@@ -1,0 +1,1 @@
+# nebenjob-kmu-kompass
