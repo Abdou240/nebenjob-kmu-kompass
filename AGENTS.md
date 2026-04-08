@@ -138,6 +138,7 @@ src/
 ├── config/                     # App config, thresholds, ads, calculator defaults
 ├── content/                    # German copy (disclaimers, FAQs)
 ├── features/calculators/       # Calculator-specific client components
+│   └── shared/                 # URL-sync, local recent history, shared calculator UX
 ├── generated/                  # Prisma generated client (gitignored)
 ├── lib/                        # Domain logic, validation, formatters, API helpers
 │   ├── api/response.ts         # Typed API response utilities
@@ -190,6 +191,8 @@ The app uses a clean, professional fintech-inspired design:
 - `.btn-primary` / `.btn-secondary` — consistent button styles
 - `.focus-ring` — accessible focus indicators
 - `.section-padding` — consistent vertical rhythm
+- `ResultHero` / `ResultCard` — main value first, supporting metrics second
+- `SidebarCard` / `ShareCard` — useful sidebar modules instead of passive filler
 
 ---
 
@@ -358,6 +361,13 @@ If uncertain on legal/tax semantics, prefer neutral wording and isolate assumpti
 - Added service layer for calculator domain logic.
 - Added shared API response utilities (success/error/validation responses).
 - Added Prisma 7 + PostgreSQL with driver adapter, initial schema (Calculation, Event).
+
+2026-04-08
+- Added stronger result UX across all calculators with primary summaries, "Was bedeutet das?" guidance, and next-check hints.
+- Added shareable calculator state through URL query params plus a copy-link sidebar action.
+- Added local recent calculations with restore/clear controls and privacy-friendly local-only storage.
+- Improved Kleinunternehmer output with annualization context, remaining buffer, and % usage of thresholds.
+- Reconciled README/AGENTS with the actual design system, shared calculator utilities, and Apache-2.0 license.
 - Added Prisma client singleton with dev-mode caching.
 - Added Docker setup: multi-stage Dockerfile, docker-compose.yml (app + PostgreSQL), .dockerignore.
 - Next.js standalone output for production Docker builds.

@@ -16,6 +16,7 @@ type CalculatorLayoutProps = {
   disclaimer: ReactNode;
   faq: ReactNode;
   relatedLinks: RelatedLink[];
+  sidebarExtra?: ReactNode;
 };
 
 export function CalculatorLayout({
@@ -24,13 +25,14 @@ export function CalculatorLayout({
   children,
   disclaimer,
   faq,
-  relatedLinks
+  relatedLinks,
+  sidebarExtra
 }: CalculatorLayoutProps) {
   return (
     <div>
       {/* Page header */}
       <div className="border-b border-surface-border bg-surface-muted">
-        <Container className="py-8 sm:py-10">
+        <Container className="py-6 sm:py-8">
           <div className="flex items-center gap-2 text-xs font-medium text-text-tertiary">
             <Link href="/" className="transition-colors hover:text-brand-600">Start</Link>
             <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4.5 3L7.5 6L4.5 9" /></svg>
@@ -42,10 +44,11 @@ export function CalculatorLayout({
       </div>
 
       {/* Calculator + sidebar */}
-      <Container className="grid gap-8 py-8 sm:py-10 lg:grid-cols-[5fr_2fr]">
+      <Container className="grid gap-6 py-6 sm:py-8 lg:grid-cols-[5fr_2fr]">
         <div className="space-y-6">{children}</div>
         <aside className="space-y-5">
           <AdSlot placement="calculator" />
+          {sidebarExtra}
           <div className="card p-4">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Weitere Rechner</h2>
             <div className="mt-3 space-y-2">

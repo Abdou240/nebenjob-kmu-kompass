@@ -13,6 +13,9 @@ describe("calculateKleinunternehmer", () => {
 
     expect(result.annualPrevRevenue).toBe(24000);
     expect(result.annualCurrentRevenue).toBe(96000);
+    expect(result.annualizationFactor).toBe(12);
+    expect(result.prevYearDelta).toBe(1000);
+    expect(result.currentYearDelta).toBe(4000);
     expect(result.prevYearStatus).toBe("near");
     expect(result.currentYearStatus).toBe("near");
     expect(result.overallStatus).toBe("near");
@@ -27,6 +30,7 @@ describe("calculateKleinunternehmer", () => {
     });
 
     expect(result.annualCurrentRevenue).toBe(108000);
+    expect(result.currentYearDelta).toBe(-8000);
     expect(result.overallStatus).toBe("exceeded");
   });
 });

@@ -17,7 +17,12 @@ export type KleinunternehmerInput = {
 export type KleinunternehmerResult = {
   annualPrevRevenue: number;
   annualCurrentRevenue: number;
+  annualizationFactor: number;
   regime: KleinunternehmerRegime;
+  prevYearDelta: number;
+  currentYearDelta: number;
+  prevYearUsagePercent: number;
+  currentYearUsagePercent: number;
   prevYearStatus: "within" | "near" | "exceeded";
   currentYearStatus: "within" | "near" | "exceeded";
   overallStatus: "within" | "near" | "exceeded";
@@ -50,6 +55,10 @@ export function calculateKleinunternehmer(input: KleinunternehmerInput): Kleinun
 
   const annualPrevRevenue = input.revenuePrevPeriod * multiplier;
   const annualCurrentRevenue = input.revenueCurrentPeriod * multiplier;
+  const prevYearDelta = regime.prevYearLimit - annualPrevRevenue;
+  const currentYearDelta = regime.currentYearLimit - annualCurrentRevenue;
+  const prevYearUsagePercent = regime.prevYearLimit > 0 ? (annualPrevRevenue / regime.prevYearLimit) * 100 : 0;
+  const currentYearUsagePercent = regime.currentYearLimit > 0 ? (annualCurrentRevenue / regime.currentYearLimit) * 100 : 0;
 
   const prevYearStatus = statusFor(annualPrevRevenue, regime.prevYearLimit);
   const currentYearStatus = statusFor(annualCurrentRevenue, regime.currentYearLimit);
@@ -64,7 +73,12 @@ export function calculateKleinunternehmer(input: KleinunternehmerInput): Kleinun
   return {
     annualPrevRevenue,
     annualCurrentRevenue,
+    annualizationFactor: multiplier,
     regime,
+    prevYearDelta,
+    currentYearDelta,
+    prevYearUsagePercent,
+    currentYearUsagePercent,
     prevYearStatus,
     currentYearStatus,
     overallStatus

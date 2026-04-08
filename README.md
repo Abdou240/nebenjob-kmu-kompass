@@ -1,12 +1,20 @@
 # Nebenjob & Kleinunternehmer Helfer
 
-Kostenlose, unverbindliche Rechner für Nebenverdienst, Kleinunternehmer-Grenzen und Stundenlohn. Einfach, mobilfreundlich, ohne Schnickschnack.
+Kostenlose, unverbindliche Rechner für Nebenverdienst, Kleinunternehmer-Grenzen und Stundenlohn. Deutschsprachig, mobilfreundlich und auf schnelle Orientierung ausgelegt.
 
 ## Rechner
 
 - **Stundenlohn / Arbeitszeit** — Stundenlohn, Monatsstunden und Überstunden berechnen
 - **Nebenverdienst** — Monatlichen und jährlichen Nebenverdienst inkl. Szenarien schätzen
 - **Kleinunternehmer-Check** — Umsatzgrenzen der Kleinunternehmerregelung unverbindlich prüfen
+
+## Produktfeatures
+
+- Prominente Ergebnisbereiche mit Hauptwert, Kurzfazit und nächsten Prüfpunkten
+- Sharebare Eingaben via URL-Query-Parametern
+- Lokale letzte Berechnungen mit Wiederherstellen und Löschen ohne Konto
+- Nützlichere Sidebar mit Teilen, Kurz-Erklärung, Regelungsstand und Empfehlungen
+- "Wie wird gerechnet?"-Blöcke und praxisnähere FAQ-Inhalte
 
 ## Tech Stack
 
@@ -42,6 +50,9 @@ src/
 │   ├── Input.tsx               # Styled input
 │   ├── Select.tsx              # Styled select
 │   ├── ResultCard.tsx          # Result display card
+│   ├── ResultHero.tsx          # Primary calculator result
+│   ├── SidebarCard.tsx         # Reusable sidebar module shell
+│   ├── ShareCard.tsx           # Copy current calculator state URL
 │   ├── FAQ.tsx                 # Collapsible FAQ accordion
 │   ├── DisclaimerBox.tsx       # Disclaimer with info icon
 │   └── AdSlot.tsx              # Ad placeholder
@@ -52,9 +63,11 @@ src/
 │   └── thresholds.ts           # Kleinunternehmer regime data
 ├── content/                    # German copy & content
 │   ├── disclaimers.ts          # Centralized disclaimer texts
-│   └── faqs.ts                 # FAQ content per calculator
+│   ├── faqs.ts                 # FAQ content per calculator
+│   └── calculator-guidance.ts  # Short explanations, next steps, how-it-works copy
 ├── features/                   # Calculator UI components (client)
 │   └── calculators/
+│       ├── shared/             # URL state + recent calculation helpers
 │       ├── stundenlohn/
 │       ├── nebenverdienst/
 │       └── kleinunternehmer/
@@ -156,7 +169,7 @@ The database schema includes:
 - **Calculation** — saved calculation inputs and results (for future history feature)
 - **Event** — lightweight analytics events (for future product insights)
 
-Both tables are prepared for future features and currently not actively written to from the frontend.
+Both tables remain available as backend foundation. The current MVP keeps recent calculations privacy-friendly in local storage and does not require account-based persistence.
 
 ## API Endpoints
 
@@ -173,10 +186,10 @@ All calculator endpoints accept JSON body, validate with Zod, and return `{ ok: 
 
 The UI uses a calm, professional design language:
 
-- **Colors**: ink (text), moss (primary), sand (background), mist (borders), clay (accents), ember (warnings/CTAs)
-- **Typography**: Alegreya Sans (body) + Fraunces (headings), with a defined scale from `overline` to `display`
-- **Spacing**: Consistent section/card spacing tokens
-- **Components**: Card surfaces, pill buttons, collapsible FAQ, disclaimer boxes with icons, result cards with highlight variants
+- **Colors**: `brand-*`, `surface-*`, `text-*`, plus semantic `success-*`, `warning-*`, `danger-*`
+- **Typography**: Inter for UI/body, Source Serif 4 for headings
+- **Spacing**: compact page headers, card-based sections, mobile-first form spacing
+- **Components**: section cards, result hero, metric cards, sidebar modules, FAQ accordion, disclaimer box, share card
 
 ## Konfiguration & Inhalte
 
@@ -198,4 +211,4 @@ Alle Ergebnisse sind unverbindliche Schätzungen zur Orientierung. Keine rechtli
 
 ## License
 
-AGPL-3.0 — see [LICENSE](LICENSE)
+Apache-2.0 — see [LICENSE](LICENSE)
